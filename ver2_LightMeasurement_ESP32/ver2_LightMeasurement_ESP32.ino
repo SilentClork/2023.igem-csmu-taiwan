@@ -1,4 +1,4 @@
-/**
+/*
  * Open-source Arduino Light Measurement System
  * 
  * Hardware Assembly:
@@ -18,7 +18,11 @@
  * - Ensure your power connections are correct to avoid damaging your components.
  * 
  * Author: CSMU-Taiwan
- * License: MIT
+ * 
+ * --- LICENSE INFORMATION ---
+ * Copyright (c) 2023 CSMU-Taiwan
+ * Licensed under the MIT License. 
+ * For the full license text, please see the LICENSE file in the project root.
  */
  
 #include <Wire.h>
