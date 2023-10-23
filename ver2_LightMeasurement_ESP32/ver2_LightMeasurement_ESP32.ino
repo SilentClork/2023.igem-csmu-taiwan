@@ -12,6 +12,15 @@
  * 4. Connect buttons or switches to BUTTON_PIN1 and BUTTON_PIN2.
  * 5. Ensure the board is connected to the Wi-Fi network using provided SSID and password.
  * 
+ * Before you begin:
+ * - Please ensure you provide your own Wi-Fi SSID and password below.
+ * - Do NOT share or commit your actual Wi-Fi credentials in the code for security reasons.
+ * 
+ * Instructions:
+ * 1. Replace 'YOUR_WIFI_SSID' with your actual Wi-Fi SSID.
+ * 2. Replace 'YOUR_WIFI_PASSWORD' with your actual Wi-Fi password.
+ * 3. Follow the rest of the instructions provided in the code or documentation.
+ * 
  * Note:
  * - Make sure to use pull-up resistors for the I2C connection if your module doesn't have them.
  * - This code is open-source and can be modified and shared freely, but please attribute the original author.
@@ -24,6 +33,7 @@
  * Licensed under the MIT License. 
  * For the full license text, please see the LICENSE file in the project root.
  */
+
  
 #include <Wire.h>
 #include <BH1750.h>
@@ -39,8 +49,8 @@ const int BUTTON_PIN2 = 19;
 const long buttonInterval = 200;
 const long lightInterval = 2000;
 
-const char* ssid = "csmulib";
-const char* password = "8112281123";
+const char* ssid = "YOUR_WIFI_SSID";
+const char* password = "YOUR_WIFI_PASSWORD";
 WiFiServer server(8080);
 
 BH1750 lightMeter(0x23);
