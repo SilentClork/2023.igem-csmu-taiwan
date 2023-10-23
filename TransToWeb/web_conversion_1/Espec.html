@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Spectrometer</title>
+    <link rel="stylesheet" href="Espec.css">
+
+    <link href="bootstrap5.1.1.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <header>
+        <h1>Spectrometer</h1>
+    </header>
+
+    <main>
+        <input style=" margin-right: 1%; padding: 10px;" type="text" id="ipAddress" placeholder="Enter ESP32 IP">
+        <button style="width: 30%; margin-left: 1%; margin-right: 1%; padding: 8px 12px;" class="btn btn-success"
+            onclick="confirmIP()">Confirm IP</button>
+            
+        <h1>Adjust LED Color</h1>
+        <div style="display: flex; justify-content: space-between; padding: 10px;">
+            <button class="btn btn-danger" style="width: 33%; margin-right: 1%; padding: 8px 12px;"
+                onclick="sendCommand('red')">Red</button>
+            <button class="btn btn-success" style="width: 33%; margin-right: 1%; padding: 8px 12px;"
+                onclick="sendCommand('green')">Green</button>
+            <button class="btn btn-primary" style="width: 33%; margin-right: 1%; padding: 8px 12px;"
+                onclick="sendCommand('blue')">Blue</button>
+        </div>
+
+        <h1>Data From Arduino</h1>
+        <div id="dataContainer">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">Data Type</th>
+                        <th scope="col">Value</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Lux Value</td>
+                        <td id="lux">Not test yet</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Blank Value</td>
+                        <td id="blk">Not test yet</td>
+                        <td class="text-center">
+                            <button onclick="sendCommand('blk')" type="button"
+                                class="btn btn-primary custom-padding-btn" style="padding-top: 1px; padding-bottom: 1px;">Blank</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Test Value</td>
+                        <td id="tst">Not test yet</td>
+                        <td class="text-center">
+                            <!-- 注意這裡的兩個事件 -->
+                            <button onclick="sendCommand('tst'); setBooleanTrue()" type="button"
+                                class="btn btn-primary custom-padding-btn" style="padding-top: 1px; padding-bottom: 1px;">Test</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Calculate Value</td>
+                        <td id="cal">Not test yet</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <table id="dataTable" class="table table-bordered">
+            <!-- 表頭 -->
+            <thead class="thead-dark"> <!-- 添加背景色使表頭更顯眼 -->
+                <tr>
+                    <th>Absorbance</th>
+                    <th>Concentration</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <!-- 表格主體 -->
+            <tbody id="tableBody">
+            </tbody>
+        </table>
+
+
+        <!-- 新增一行按鈕 -->
+        <button class="btn btn-success" style="width: 30%; margin-right: 1%; padding: 8px 12px;" onclick="addRow()">Add
+            Row</button>
+
+        <button class="btn btn-primary" style="width: 40%; margin-left: 1%; padding: 8px 12px;"
+            onclick="drawChart()">TrendLine</button>
+
+        <table class="table table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Item</th>
+                    <th scope="col">Value</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Prediction Result</td>
+                    <td id="predictionResult">Not Test Yet</td>
+                    <td class="text-center">
+                        <button onclick="sendCommand('tst'); setBooleanFalse();" class="btn btn-primary" style="padding-top: 1px; padding-bottom: 1px;">Test</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Equation</td>
+                    <td id="equation">Not Test Yet</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>R² value</td>
+                    <td id="rsquared">Not Test Yet</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <canvas id="myChart" width="400" height="200"></canvas>
+
+    </main>
+
+    <script src="Espec.js"></script>
+
+    <script src="bootstrap.bundle.min5.1.1.js"></script>
+
+</body>
+
+</html>

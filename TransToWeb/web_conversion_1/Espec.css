@@ -1,0 +1,30 @@
+.boldText {
+    font-weight: bold;
+}
+
+.input1,
+.text1,
+.input2,
+.text2 {
+    display: inline-block;
+}
+
+.input1,
+.input2 {
+    width: 100px;
+    /* 或者您想要的任何尺寸 */
+    height: 30px;
+    /* 或者您想要的任何尺寸 */
+}
+
+.custom-padding-btn {
+    padding-top: 1px;
+    /* Change to your preferred value */
+    padding-bottom: 1px;
+    /* Change to your preferred value */
+    text-align: center;
+}
+
+.custom-padding-btn:nth-child(2) {
+    margin-left: 5px;
+}
