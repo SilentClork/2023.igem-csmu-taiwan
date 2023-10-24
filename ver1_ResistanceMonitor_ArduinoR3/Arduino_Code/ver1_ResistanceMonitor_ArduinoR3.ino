@@ -41,7 +41,7 @@ void setup() {
   lcd.begin();                  // Initialize the LCD
   lcd.backlight();              // Turn on the backlight of the LCD
   
-  displayMessage("Hello NSSH !", "");  // Display a welcome message on the LCD
+  displayMessage("Hello iGEM !", "");  // Display a welcome message on the LCD
   delay(2000);                  // Wait for 2 seconds
 }
 
