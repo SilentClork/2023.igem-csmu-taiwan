@@ -1,0 +1,397 @@
+<!--
+Espec: Open-source Web Interface for Light Measurement System
+
+Description:
+Espec is an HTML interface designed to communicate with an Arduino-based Light Measurement System. Users can access measurements, change settings, and receive notifications based on the light data through this interface.
+
+Assembly and Connection:
+1. Ensure the Arduino system is running the provided open-source Arduino code.
+2. Connect the system to the same network as the Espec interface.
+3. Open Espec in a web browser and input the appropriate IP or address of the Arduino system.
+
+Note:
+- Ensure a stable network connection between the Arduino system and the Espec interface.
+- Espec is open-source and can be modified and shared freely. Please attribute the original author when sharing or modifying.
+- Always test in a safe environment before deploying.
+
+Author: CSMU-Taiwan
+License: MIT
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>EspecWeb</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .boldText {
+            font-weight: bold;
+        }
+
+        .input1,
+        .text1,
+        .input2,
+        .text2 {
+            display: inline-block;
+        }
+
+        .input1,
+        .input2 {
+            width: 100px;
+            height: 30px;
+        }
+
+        .custom-padding-btn {
+            padding-top: 1px;
+            padding-bottom: 1px;
+            text-align: center;
+        }
+
+        .custom-padding-btn:nth-child(2) {
+            margin-left: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>EspecWeb</h1>
+
+    <input style=" margin-right: 1%; padding: 10px;" type="text" id="ipAddress" placeholder="Enter ESP32 IP">
+    <button style="width: 30%; margin-left: 1%; margin-right: 1%; padding: 8px 12px;" class="btn btn-success"
+        onclick="confirmIP()">Confirm IP</button>
+
+    <h1>Adjust LED Color</h1>
+    <div style="display: flex; justify-content: space-between; padding: 10px;">
+        <button class="btn btn-danger" style="width: 33%; margin-right: 1%; padding: 8px 12px;"
+            onclick="sendCommand('red')">Red</button>
+        <button class="btn btn-success" style="width: 33%; margin-right: 1%; padding: 8px 12px;"
+            onclick="sendCommand('green')">Green</button>
+        <button class="btn btn-primary" style="width: 33%; margin-right: 1%; padding: 8px 12px;"
+            onclick="sendCommand('blue')">Blue</button>
+    </div>
+
+    <h1>Data From Arduino</h1>
+    <div id="dataContainer">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th scope="col">Data Type</th>
+                    <th scope="col">Value</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Lux Value</td>
+                    <td colspan="2" id="lux">Not test yet</td>
+                </tr>
+                <tr>
+                    <td>Blank Value</td>
+                    <td id="blk">Not test yet</td>
+                    <td class="text-center">
+                        <button onclick="sendCommand('blk')" type="button" class="btn btn-primary custom-padding-btn"
+                            style="padding-top: 1px; padding-bottom: 1px;">Blank</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Test Value</td>
+                    <td id="tst">Not test yet</td>
+                    <td class="text-center">
+                        <button onclick="sendCommand('tst'); setBooleanTrue()" type="button"
+                            class="btn btn-primary custom-padding-btn"
+                            style="padding-top: 1px; padding-bottom: 1px;">Test</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Absorbance</td>
+                    <td colspan="2" id="cal">Not test yet</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <table id="dataTable" class="table table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th>Absorbance</th>
+                <th>Concentration</th>
+                <th colspan="2">Actions</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody">
+        </tbody>
+    </table>
+
+    <button class="btn btn-success" style="width: 30%; margin-right: 1%; padding: 8px 12px;" onclick="addRow()">Add
+        Row</button>
+
+    <button class="btn btn-primary" style="width: 40%; margin-left: 1%; padding: 8px 12px;"
+        onclick="drawChart()">TrendLine</button>
+
+    <table class="table table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th scope="col">Item</th>
+                <th scope="col">Value</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Prediction Result</td>
+                <td id="predictionResult">Not Test Yet</td>
+                <td class="text-center">
+                    <button onclick="sendCommand('tst'); setBooleanFalse();" class="btn btn-primary"
+                        style="padding-top: 1px; padding-bottom: 1px;">Test</button>
+                </td>
+            </tr>
+            <tr>
+                <td>Equation</td>
+                <td colspan="2" id="equation">Not Test Yet</td>
+            </tr>
+            <tr>
+                <td>R² value</td>
+                <td colspan="2" id="rsquared">Not Test Yet</td>
+            </tr>
+        </tbody>
+    </table>
+    <canvas id="myChart" width="400" height="200"></canvas>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    <script>
+        let previousCal = 'Not test yet';
+        let previousLux = 'Not test yet';
+        let previousBlk = 'Not test yet';
+        let previousTst = 'Not test yet';
+        let ipAddress = null;
+        let someTestBoolean = true;
+        let globalA = 0;
+        let globalB = 0;
+        let predictedConcentration = 0;
+        /**
+         * Confirm the provided IP address and start the data retrieval process.
+         */
+        function confirmIP() {
+            const input = document.getElementById('ipAddress').value;
+            if (input) {
+                ipAddress = input;
+                console.log(`IP address updated to ${ipAddress}`);
+                console.log("Starting data retrieval...");
+                repeatedlyFetchData();
+            }
+        }
+        /**
+         * Continuously fetch data with a delay.
+         */
+        async function repeatedlyFetchData() {
+            while (true) {
+                await fetchData();
+                await new Promise(resolve => setTimeout(resolve, 3000));
+            }
+        }
+        /**
+         * Fetch data from the specified IP address.
+         */
+        async function fetchData() {
+            console.log("Preparing to initiate HTTP request...");
+            try {
+                const response = await fetch(`http://${ipAddress}:8080/`);
+                console.log("Response received, checking...");
+
+                if (!response.ok) {
+                    console.log("Response has issues, terminating.");
+                    return;
+                }
+
+                console.log("Response is fine, parsing JSON...");
+
+                let data = await response.json();
+
+                data.lux = (data.lux !== 0) ? data.lux : previousLux;
+                data.blk = (data.blk !== 0) ? data.blk : previousBlk;
+                data.cal = (data.cal !== 0) ? data.cal : previousCal;
+                data.tst = (data.tst !== 0) ? data.tst : previousTst;
+
+                console.log(`Data used: ${JSON.stringify(data)}`);
+
+                if (previousCal !== data.cal) {
+                    previousCal = data.cal;
+                    if (someTestBoolean) {
+                        addRowWithCal(data.cal);
+                        console.log("Add row");
+                    } else {
+                        predictConcentration(data.cal);
+                        console.log("Predict");
+                    }
+                }
+                previousLux = data.lux;
+                previousBlk = data.blk;
+                previousTst = data.tst;
+                previousCal = data.cal;
+                document.getElementById('lux').textContent = (typeof data.lux === "number") ? `${data.lux} lux` : 'Not test yet';
+                document.getElementById('blk').textContent = (typeof data.blk === "number") ? `${data.blk} lux` : 'Not test yet';
+                document.getElementById('cal').textContent = `${data.cal}`;
+                document.getElementById('tst').textContent = (typeof data.tst === "number") ? `${data.tst} lux` : 'Not test yet';
+
+            } catch (error) {
+                console.log(`Error occurred: ${error}`);
+            }
+        }
+
+        async function sendCommand(command) {
+            console.log(`Preparing to send /${command} command...`);
+            try {
+                const response = await fetch(`http://${ipAddress}:8080/${command}`);
+                console.log("Response received, checking...");
+                if (!response.ok) {
+                    console.log("Response has issues, terminating.");
+                    return;
+                }
+                console.log("Response is fine.");
+            } catch (error) {
+                console.log(`Error occurred: ${error}`);
+            }
+        }
+
+        let dataDict = {};
+        function addRow() {
+            const table = document.getElementById("tableBody");
+            const row = table.insertRow(-1);
+            const cell1 = row.insertCell(0);
+            const cell2 = row.insertCell(1);
+            const cell3 = row.insertCell(2);
+            const cell4 = row.insertCell(3);
+            cell1.innerHTML = '<input type="text" class="input1"><span class="text1"></span>';
+            cell2.innerHTML = '<input type="text" class="input2"><span class="text2"></span>';
+            cell3.innerHTML = '<button class="btn btn-success custom-padding-btn" onclick="saveData(this)" style="padding-top: 1px; padding-bottom: 1px; font-size: 12px;">Save</button>';
+            cell4.innerHTML = '<button class="btn btn-danger custom-padding-btn" onclick="deleteRow(this)" style="padding-top: 1px; padding-bottom: 1px; font-size: 12px;">Delete</button>';
+        }
+        function saveData(buttonElement) {
+            const row = buttonElement.parentElement.parentElement;
+            const input1Element = row.getElementsByClassName("input1")[0];
+            const input2Element = row.getElementsByClassName("input2")[0];
+            const text1Element = row.getElementsByClassName("text1")[0];
+            const text2Element = row.getElementsByClassName("text2")[0];
+            const input1Value = input1Element.value;
+            const input2Value = input2Element.value;
+            if (input1Value && input2Value) {
+                dataDict[input1Value] = input2Value;
+                console.log('Current dictionary:', dataDict);
+                input1Element.classList.add('boldText');
+                input2Element.classList.add('boldText');
+                console.log("bold");
+            }
+        }
+        function deleteRow(buttonElement) {
+            const row = buttonElement.parentElement.parentElement;
+            const input1 = row.getElementsByClassName("input1")[0].value;
+            if (dataDict.hasOwnProperty(input1)) {
+                delete dataDict[input1];
+            }
+            console.log('Current dictionary:', dataDict);
+            row.remove();
+        }
+
+        function addRowWithCal(calValue) {
+            const table = document.getElementById("tableBody");
+            const row = table.insertRow(-1);
+            const cell1 = row.insertCell(0);
+            const cell2 = row.insertCell(1);
+            const cell3 = row.insertCell(2);
+            const cell4 = row.insertCell(3);
+            cell1.innerHTML = '<input type="text" class="input1"><span class="text1"></span>';
+            cell2.innerHTML = '<input type="text" class="input2"><span class="text2"></span>';
+            cell3.innerHTML = '<button class="btn btn-success custom-padding-btn" onclick="saveData(this)" style="padding-top: 1px; padding-bottom: 1px; font-size: 12px;">Save</button>';
+            cell4.innerHTML = '<button class="btn btn-danger custom-padding-btn" onclick="deleteRow(this)" style="padding-top: 1px; padding-bottom: 1px; font-size: 12px;">Delete</button>';
+        }
+
+        addRow();
+
+        function linearRegression(x, y) {
+            const n = x.length;
+            let sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
+            for (let i = 0; i < n; i++) {
+                sumX += x[i];
+                sumY += y[i];
+                sumXY += x[i] * y[i];
+                sumXX += x[i] * x[i];
+            }
+            const a = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+            const b = (sumY - a * sumX) / n;
+            let sumResiduals = 0, sumTotal = 0, yMean = sumY / n;
+            for (let i = 0; i < n; i++) {
+                const predicted = a * x[i] + b;
+                sumResiduals += Math.pow(y[i] - predicted, 2);
+                sumTotal += Math.pow(y[i] - yMean, 2);
+            }
+            const rsquared = 1 - sumResiduals / sumTotal;
+            return { a, b, rsquared };
+        }
+
+        function drawChart() {
+            const ctx = document.getElementById('myChart').getContext('2d');
+            const labels = Object.keys(dataDict).map(Number);
+            const data = Object.values(dataDict).map(Number);
+            const { a, b, rsquared } = linearRegression(labels, data);
+            const equation = `y = ${a.toFixed(4)}x + ${b.toFixed(4)}`;
+            globalA = a;
+            globalB = b;
+
+            document.getElementById('equation').innerText = `${equation}`;
+            document.getElementById('rsquared').innerText = `${rsquared.toFixed(4)}`;
+
+            const chart = new Chart(ctx, {
+                type: 'scatter',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Concentration vs Absorbance',
+                        data: labels.map((label, i) => ({ x: label, y: data[i] })),
+                        backgroundColor: 'rgba(0, 123, 255, 1)'
+                    },
+                    {
+                        type: 'line',
+                        label: 'Trendline',
+                        data: labels.map((label) => ({ x: label, y: a * label + b })),
+                        borderColor: 'rgba(255, 0, 0, 1)',
+                        borderWidth: 1,
+                        fill: false,
+                        borderDash: [5, 5],
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: { type: 'linear', position: 'bottom' }
+                    }
+                }
+            });
+        }
+        function setBooleanTrue() {
+            someTestBoolean = true;
+            console.log("true");
+        }
+        function setBooleanFalse() {
+            someTestBoolean = false;
+            console.log("false");
+        }
+        /**
+         * Predict concentration based on the provided absorbance value.
+         */
+        function predictConcentration(absorbance) {
+            const predictedConcentration = (absorbance - globalB) / globalA;
+            document.getElementById('predictionResult').innerText = `${predictedConcentration.toFixed(4)}`;
+        }
+    </script>
+</body>
+
+</html>
