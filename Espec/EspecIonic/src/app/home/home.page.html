@@ -1,0 +1,257 @@
+<!-- <ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Blank
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Blank</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div id="container">
+    <strong>Ready to create an app?</strong>
+    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+  </div>
+</ion-content> -->
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Espec</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Espec</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <!-- <ion-button [routerLink]="['/tab1']">Back</ion-button> -->
+
+  <button style="width: 25%; margin-left: 1%; padding: 8px 12px;" class="btn btn-primary mt-2"
+  [routerLink]="['/tab1']">Back</button>
+
+  <h1>Connect to Arduino</h1>
+  <div style="display: flex; justify-content: space-between; padding: 10px;">
+    <!-- IP Address Input -->
+    <input type="text" style="width: 35%; margin-right: 1%; padding: 10px;" [(ngModel)]="esp32_ip"
+      placeholder="ENTER IP">
+
+    <!-- Confirm IP Button -->
+    <button style="width: 30%; margin-left: 1%; margin-right: 1%; padding: 8px 12px;" class="btn btn-success"
+      [disabled]="isIpSet" (click)="setESP32Ip(esp32_ip)">Confirm</button>
+
+    <!-- Reconnect Button -->
+    <button style="width: 35%; margin-left: 1%; padding: 8px 12px;" class="btn btn-primary"
+      (click)="restartFetching()">Reconnect</button>
+  </div>
+
+
+  <!-- <div style="display: flex; justify-content: space-between; padding: 10px;">
+
+    <input type="text" style="width: 48%; margin-right: 1%; padding: 10px;" [(ngModel)]="esp32_ip"
+      placeholder="Enter ESP32 IP">
+
+    <button style="width: 48%; margin-left: 1%; padding: 8px 12px;" class="btn btn-secondary" [disabled]="isIpSet"
+      (click)="setESP32Ip(esp32_ip)">CONFIRM IP</button>
+  </div>
+
+  <div>
+    <button class="btn btn-secondary btn-block" (click)="restartFetching()">RECONNECT</button>
+  </div> -->
+
+  <!-- <div>
+    <input type="text" class="form-control" [(ngModel)]="esp32_ip" placeholder="Enter ESP32 IP">
+  </div>
+
+  <div>
+    <button class="btn btn-primary btn-block" [disabled]="isIpSet" (click)="setESP32Ip(esp32_ip)">CONFIRM
+      IP</button>
+  </div> -->
+  <h1>Adjust LED Color</h1>
+  <div style="display: flex; justify-content: space-between; padding: 10px;">
+  
+  <button class="btn btn-danger" style="width: 33%; margin-right: 1%; padding: 8px 12px;" [disabled]="!isIpSet" (click)="REDLED()">Red LED</button>
+  <button class="btn btn-success" style="width: 34%; margin-right: 1%; padding: 8px 12px;"[disabled]="!isIpSet" (click)="GREENLED()">Green LED</button>
+  <button class="btn btn-primary" style="width: 33%; margin-right: 1%; padding: 8px 12px;"[disabled]="!isIpSet" (click)="BLUELED()">Blue LED</button>
+</div>
+
+  
+
+  <!-- <div *ngIf="dataFromArduino">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Data from Arduino</ion-card-title>
+      </ion-card-header>
+      <ion-card-content> <ion-button [disabled]="!isIpSet" (click)="ESPBLK()">Blank</ion-button>
+        <ion-button [disabled]="!isIpSet" (click)="ESPTST()">Test</ion-button>
+
+        <p>Lux Value: {{ dataFromArduino.lux }}</p>
+        <p>Blank Value: {{ dataFromArduino.blk }}</p>
+        <p>Calulate Value: {{ dataFromArduino.cal }}</p>
+        <p>Test Value: {{ dataFromArduino.tst }}</p>
+      </ion-card-content>
+    </ion-card>
+  </div> -->
+
+  <h1>Data From Arduino</h1>
+  <div *ngIf="dataFromArduino">
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th scope="col">Data Type</th>
+          <th scope="col">Value</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Lux Value</td>
+          <td colspan="2">{{ dataFromArduino.lux }}</td>
+        </tr>
+        <tr>
+          <td>Blank Value</td>
+          <td>{{ dataFromArduino.blk }}</td>
+          <td class="text-center">
+            <button type="button" class="btn btn-primary custom-padding-btn " [disabled]="!isIpSet" (click)="ESPBLK()" 
+              style="font-size: 14px;">Blank</button>
+          </td>
+        </tr>
+        <tr>
+          <td>Test Value</td>
+          <td>{{ dataFromArduino.tst }}</td>
+          <td class="text-center">
+            <button type="button" class="btn btn-primary custom-padding-btn " [disabled]="!isIpSet" (click)="ESPTST()" (click)="setBooleanTrue()"
+              style="font-size: 14px;">Test</button>
+          </td>
+        </tr>
+        <tr>
+          <td>Absorbance</td>
+          <td colspan="2">{{ dataFromArduino.cal }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- <ion-list>
+    <ion-item *ngFor="let row of rows; let i = index">
+      <ion-input [(ngModel)]="row.calculate" placeholder="Calculate" 
+    [ngClass]="{'saved-text': isSaved(row)}"></ion-input>
+<ion-input [(ngModel)]="row.concentration" placeholder="Concentration"
+    [ngClass]="{'saved-text': isSaved(row)}"></ion-input>
+<ion-button (click)="removeRow(i)">Delete</ion-button>
+      <ion-button [disabled]="!row.concentration" (click)="saveData(i)">Save</ion-button>
+    </ion-item>
+  </ion-list> -->
+  <h1>  Data for Trendline</h1>
+
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th scope="col" style="font-size: 14px;"> </th>
+        <th scope="col" style="font-size: 14px;">Absorbance</th>
+        <th scope="col" style="font-size: 14px;">Concentration</th>
+        <th scope="col" style="font-size: 14px;">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of rows; let i = index">
+        <th scope="row">{{ i + 1 }}</th>
+        <td class="text-center">
+          <input type="text" [(ngModel)]="row.calculate" style="font-size: 14px;"
+            [ngClass]="{'saved-text': isSaved(row)}">
+        </td>
+        <td class="text-center">
+          <input type="text" [(ngModel)]="row.concentration" style="font-size: 14px;"
+            [ngClass]="{'saved-text': isSaved(row)}">
+        </td>
+        <td>
+          <button class="btn btn-danger custom-padding-btn" (click)="removeRow(i)" style="font-size: 14px;">Delete</button>
+          <button class="btn btn-success custom-padding-btn" [disabled]="!row.concentration" (click)="saveData(i)"
+            style="font-size: 14px;">Save</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- <ion-button (click)="addRow()">Add Row</ion-button>
+  <ion-button (click)="clearData()">Clear Data</ion-button>
+  <ion-button (click)="plotGraph()">Make Trendline</ion-button> -->
+
+  <div style="display: flex; justify-content: space-between; padding: 10px;">
+    <!-- Add Row Button -->
+    <button class="btn btn-success" style="width: 30%; margin-right: 1%; padding: 8px 12px;" (click)="addRow()">Add Row</button>
+  
+    <!-- Clear Data Button -->
+    <button class="btn btn-danger" style="width: 30%; margin-left: 1%; margin-right: 1%; padding: 8px 12px;" (click)="clearData()">Clear Data</button>
+  
+    <!-- Make Trendline Button -->
+    <button class="btn btn-primary" style="width: 40%; margin-left: 1%; padding: 8px 12px;" (click)="plotGraph()">Make Trendline</button>
+  </div>
+  
+
+  <!-- <div *ngIf="showCard">
+    <ion-card *ngIf="dataDictionary">
+      <ion-card-header>
+        <ion-card-title>Dictionary Data</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item *ngFor="let key of objectKeys(dataDictionary)">
+            <ion-label>
+              {{ key }} : {{ dataDictionary[key] }}
+            </ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  </div> -->
+  <h1>Trendline's Data</h1>
+  <!-- *ngIf="showStats" -->
+  <!-- *ngIf="isTrendlineCreated" -->
+<div >
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th scope="col">Statistic Type</th>
+        <th scope="col">Value</th>
+        <th scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody>      
+      <tr >
+        <td>Predicted Concentration</td>
+        <td>{{ predictedConcentration | number:'1.4-4' }}</td>
+        <td class="text-center">
+          <button type="button" class="btn btn-primary custom-padding-btn " [disabled]="!isIpSet" (click)="ESPTST()" (click)="setBooleanFalse()"
+            style="font-size: 14px;">Test</button>
+        </td>
+      </tr>
+      <tr>
+        <td>Trendline Equation</td>
+        <td colspan="2">{{ trendlineEquation }}</td>
+      </tr>
+      <tr>
+        <td>R-Squared Value</td>
+        <td colspan="2">{{ rSquared | number:'1.4-4' }}</td>
+      </tr>
+
+    </tbody>
+  </table>
+</div>
+
+  <canvas #chartCanvas></canvas>
+<!-- 
+  <div *ngIf="showStats">
+    <ion-label>Trendline Equation: {{ trendlineEquation }}</ion-label>
+  </div>
+  <div *ngIf="showStats">
+    <ion-label>R-Squared Value: {{ rSquared | number:'1.4-4' }}</ion-label>
+    <br>
+    <ion-label *ngIf="isTrendlineCreated">Predicted Concentration: {{ predictedConcentration }}</ion-label>
+  </div> -->
+
