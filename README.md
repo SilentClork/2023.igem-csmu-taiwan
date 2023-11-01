@@ -28,9 +28,6 @@ Assembly and usage guide for the hardware.
 3D_Components:
 3D design files for the second-generation hardware.
 
-Arduino_Code:
-Code for the ESP32.
-
 Arduino_Code: Contains the code for the ESP32. This includes:
   - `ver2_LightMeasurement_ESP32.ino`: The initial version requiring Wi-Fi connectivity.
   - `ver2-2_LightMeasurement_ESP32_NoWIFI.ino`: An updated version that operates without the need for Wi-Fi connectivity, suitable for environments lacking network infrastructure.
